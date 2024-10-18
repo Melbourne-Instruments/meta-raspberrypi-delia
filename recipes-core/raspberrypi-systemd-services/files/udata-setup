@@ -1,0 +1,32 @@
+#!/bin/bash
+#echo "Changing udata perms to user"
+chown -R delia:delia /udata
+rm -f /udata/change_perms
+rm -rf /udata/.elk-system/var
+mkdir -p /udata/.elk-system
+echo "Setting elk-system.conf in /udata"
+cp /etc/elk-system.conf /udata/.elk-system
+
+# Setup Delia
+mkdir /udata/delia
+mkdir /udata/delia/presets
+mkdir /udata/delia/wavetables
+mkdir /udata/delia/tuning
+mkdir /udata/delia/calibration
+echo "1" > /udata/delia/calibration/1_1_mix_cal.txt
+mv /udata/config.json /udata/delia
+chmod 0666 /udata/delia/config.json
+mv /udata/global_params.json /udata/delia
+chmod 0666 /udata/delia/global_params.json
+mkdir /udata/delia/presets/001_BANK
+mv /udata/001_FACTORY_TEST.json /udata/delia/presets/001_BANK
+chmod 0666 /udata/delia/presets/001_BANK/*
+for i in $(seq -f "%03g" 2 32)
+do
+  mkdir /udata/delia/presets/${i}_BANK
+done
+
+tar -xf /udata/wavetables.tar.xz -C /udata/delia/wavetables
+chmod 0666 /udata/delia/wavetables/*
+rm /udata/wavetables.tar.xz
+sync
